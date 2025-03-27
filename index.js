@@ -11,7 +11,8 @@ const progressBar = document.getElementById("progressBar");
 const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 
 // Step 0: Store your API key here for reference and easy access.
-const API_KEY = "live_32lM8iy1pyWLvnNf1bnlXXbQ6yWzrHaHTG3YeWlIXizJdFof3OSFZmetoAW33g1y";
+const API_KEY =
+  "live_32lM8iy1pyWLvnNf1bnlXXbQ6yWzrHaHTG3YeWlIXizJdFof3OSFZmetoAW33g1y";
 
 /**
  * 1. Create an async function "initialLoad" that does the following:
@@ -22,6 +23,38 @@ const API_KEY = "live_32lM8iy1pyWLvnNf1bnlXXbQ6yWzrHaHTG3YeWlIXizJdFof3OSFZmetoA
  * This function should execute immediately.
  */
 
+// Async function to load breeds
+const initialLoad = async () => {
+  // Get the select element by its ID
+  let selectBox = document.getElementById("breedSelect");
+
+  // Check if the selectBox exists to avoid errors if it's missing
+
+  try {
+    // Make a GET request to the API to retrieve the list of breeds
+    const response = await fetch("https://api.thecatapi.com/v1/breeds", {
+      headers: {
+        "x-api-key": API_KEY,
+      },
+    });
+
+    const breeds = await response.json();
+
+    // Iterate through the breeds and create <option> elements
+    breeds.forEach((breed) => {
+      let option = document.createElement("option");
+      option.value = breed.id; // Use the breed's id as the value
+      option.textContent = breed.name; // Use the breed's name as the displayed text
+      selectBox.appendChild(option); // Append the option to the select element
+    });
+  } catch (err) {
+    console.log("Error:", err); // Log any errors
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initialLoad();
+});
 /**
  * 2. Create an event handler for breedSelect that does the following:
  * - Retrieve information on the selected breed from the cat API using fetch().
