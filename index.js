@@ -52,9 +52,6 @@ const initialLoad = async () => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  initialLoad();
-});
 /**
  * 2. Create an event handler for breedSelect that does the following:
  * - Retrieve information on the selected breed from the cat API using fetch().
@@ -70,8 +67,97 @@ document.addEventListener("DOMContentLoaded", () => {
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
 
+// Event handler for breed selection
+const handleBreedSelect = async (event) => {
+  const breedId = event.target.value;
+  const infoDump = document.getElementById("infoDump");
+  const progressBar = document.getElementById("progressBar");
+  const getFavouritesBtn = document.getElementById("getFavouritesBtn");
+  const carouselInner = document.getElementById("carouselInner");
+
+  if (!breedId) return; // if no breed is selected, exit
+
+  // show the progress bar while fetching breed info
+  progressBar.style.width = "100%";
+  progressBar.style.transition = "width 1s ease";
+
+  try {
+    // fetch information for the selected breed from the Cat API
+    const breedInfoResponse = await fetch(
+      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}&limit=5`,
+      {
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      }
+    );
+
+    const breedImages = await breedInfoResponse.json();
+
+    // Clear any previous carousel and information
+    carouselInner.innerHTML = "";
+    infoDump.innerHTML = "";
+
+    // Create carousel items using the images from the API
+    breedImages.forEach((imageData, index) => {
+      const carouselItemTemplate = document.getElementById(
+        "carouselItemTemplate"
+      );
+      const newCarouselItem = carouselItemTemplate.content.cloneNode(true);
+      const carouselItem = newCarouselItem.querySelector(".carousel-item");
+      const img = carouselItem.querySelector("img");
+      const favButton = carouselItem.querySelector(".favourite-button");
+
+      img.src = imageData.url; // set the image URL
+      img.alt = `Cat Image ${index + 1}`; // Set the alt text for accessibility
+
+      // adding functionality to the favourite button
+      favButton.dataset.imgId = imageData.id; // Store the image ID for future reference
+      favButton.addEventListener("click", () =>
+        handleFavouriteClick(imageData.id)
+      );
+
+      if (index === 0) {
+        carouselItem.classList.add("active"); // first item active
+      }
+
+      carouselInner.appendChild(carouselItem); // add carousel item to carousel
+    });
+
+    // show breed information
+    const breedInfo = document.createElement("div");
+    breedInfo.innerHTML = `
+      <h3>Breed Info</h3>
+      <p><strong>Origin:</strong> ${breedImages[0].breeds[0].origin}</p>
+      <p><strong>Description:</strong> ${breedImages[0].breeds[0].description}</p>
+      <p><strong>Temperament:</strong> ${breedImages[0].breeds[0].temperament}</p>
+    `;
+    infoDump.appendChild(breedInfo);
+
+    // hide progress bar after data is fetched
+    progressBar.style.width = "0%";
+  } catch (err) {
+    console.log("Error fetching breed data:", err);
+    progressBar.style.width = "0%"; // hide progress bar in case of an error
+  }
+};
+
+// favourite button click handler
+const handleFavouriteClick = (imageId) => {
+  alert(`Image with ID: ${imageId} marked as favourite.`);
+};
+
+// add event listener for breed selection when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  initialLoad();
+  const breedSelect = document.getElementById("breedSelect");
+  breedSelect.addEventListener("change", handleBreedSelect);
+});
+
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
+ *
+ *
  */
 /**
  * 4. Change all of your fetch() functions to axios!
