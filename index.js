@@ -24,33 +24,33 @@ const API_KEY =
  */
 
 // Async function to load breeds
-const initialLoad = async () => {
-  // Get the select element by its ID
-  let selectBox = document.getElementById("breedSelect");
+// const initialLoad = async () => {
+//   // Get the select element by its ID
+//   let selectBox = document.getElementById("breedSelect");
 
-  // Check if the selectBox exists to avoid errors if it's missing
+//   // Check if the selectBox exists to avoid errors if it's missing
 
-  try {
-    // Make a GET request to the API to retrieve the list of breeds
-    const response = await fetch("https://api.thecatapi.com/v1/breeds", {
-      headers: {
-        "x-api-key": API_KEY,
-      },
-    });
+//   try {
+//     // Make a GET request to the API to retrieve the list of breeds
+//     const response = await fetch("https://api.thecatapi.com/v1/breeds", {
+//       headers: {
+//         "x-api-key": API_KEY,
+//       },
+//     });
 
-    const breeds = await response.json();
+//     const breeds = await response.json();
 
-    // Iterate through the breeds and create <option> elements
-    breeds.forEach((breed) => {
-      let option = document.createElement("option");
-      option.value = breed.id; // Use the breed's id as the value
-      option.textContent = breed.name; // Use the breed's name as the displayed text
-      selectBox.appendChild(option); // Append the option to the select element
-    });
-  } catch (err) {
-    console.log("Error:", err); // Log any errors
-  }
-};
+//     // Iterate through the breeds and create <option> elements
+//     breeds.forEach((breed) => {
+//       let option = document.createElement("option");
+//       option.value = breed.id; // Use the breed's id as the value
+//       option.textContent = breed.name; // Use the breed's name as the displayed text
+//       selectBox.appendChild(option); // Append the option to the select element
+//     });
+//   } catch (err) {
+//     console.log("Error:", err); // Log any errors
+//   }
+// };
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -68,22 +68,162 @@ const initialLoad = async () => {
  */
 
 // Event handler for breed selection
+// const handleBreedSelect = async (event) => {
+//   const breedId = event.target.value;
+//   const infoDump = document.getElementById("infoDump");
+//   const progressBar = document.getElementById("progressBar");
+//   const getFavouritesBtn = document.getElementById("getFavouritesBtn");
+//   const carouselInner = document.getElementById("carouselInner");
+
+//   if (!breedId) return; // if no breed is selected, exit
+
+//   // show the progress bar while fetching breed info
+//   progressBar.style.width = "100%";
+//   progressBar.style.transition = "width 1s ease";
+
+//   try {
+//     // fetch information for the selected breed from the Cat API
+//     const breedInfoResponse = await fetch(
+//       `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}&limit=5`,
+//       {
+//         headers: {
+//           "x-api-key": API_KEY,
+//         },
+//       }
+//     );
+
+//     const breedImages = await breedInfoResponse.json();
+
+//     // Clear any previous carousel and information
+//     carouselInner.innerHTML = "";
+//     infoDump.innerHTML = "";
+
+//     // Create carousel items using the images from the API
+//     breedImages.forEach((imageData, index) => {
+//       const carouselItemTemplate = document.getElementById(
+//         "carouselItemTemplate"
+//       );
+//       const newCarouselItem = carouselItemTemplate.content.cloneNode(true);
+//       const carouselItem = newCarouselItem.querySelector(".carousel-item");
+//       const img = carouselItem.querySelector("img");
+//       const favButton = carouselItem.querySelector(".favourite-button");
+
+//       img.src = imageData.url; // set the image URL
+//       img.alt = `Cat Image ${index + 1}`; // Set the alt text for accessibility
+
+//       // adding functionality to the favourite button
+//       favButton.dataset.imgId = imageData.id; // Store the image ID for future reference
+//       favButton.addEventListener("click", () =>
+//         handleFavouriteClick(imageData.id)
+//       );
+
+//       if (index === 0) {
+//         carouselItem.classList.add("active"); // first item active
+//       }
+
+//       carouselInner.appendChild(carouselItem); // add carousel item to carousel
+//     });
+
+//     // show breed information
+//     const breedInfo = document.createElement("div");
+//     breedInfo.innerHTML = `
+//       <h3>Breed Info</h3>
+//       <p><strong>Origin:</strong> ${breedImages[0].breeds[0].origin}</p>
+//       <p><strong>Description:</strong> ${breedImages[0].breeds[0].description}</p>
+//       <p><strong>Temperament:</strong> ${breedImages[0].breeds[0].temperament}</p>
+//     `;
+//     infoDump.appendChild(breedInfo);
+
+//     // hide progress bar after data is fetched
+//     progressBar.style.width = "0%";
+//   } catch (err) {
+//     console.log("Error fetching breed data:", err);
+//     progressBar.style.width = "0%"; // hide progress bar in case of an error
+//   }
+// };
+
+// // favourite button click handler
+// const handleFavouriteClick = (imageId) => {
+//   alert(`Image with ID: ${imageId} marked as favourite.`);
+// };
+
+// // add event listener for breed selection when DOM is ready
+// document.addEventListener("DOMContentLoaded", () => {
+//   initialLoad();
+//   const breedSelect = document.getElementById("breedSelect");
+//   breedSelect.addEventListener("change", handleBreedSelect);
+// });
+
+/**
+ * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
+ *
+ *  **NOTE *** iam using integrated vscode with sandbox, there is no option to fork??
+ *
+ * created new branch called axios instead of forking
+ *
+ *
+ */
+/**
+ * 4. Change all of your fetch() functions to axios!
+ * - axios has already been imported for you within index.js.
+ * - If you've done everything correctly up to this point, this should be simple.
+ * - If it is not simple, take a moment to re-evaluate your original code.
+ * - Hint: Axios has the ability to set default headers. Use this to your advantage
+ *   by setting a default header with your API key so that you do not have to
+ *   send it manually with all of your requests! You can also set a default base URL!
+ */
+
+const initialLoad = async () => {
+  // Get the select element by its ID
+  let selectBox = document.getElementById("breedSelect");
+
+  try {
+    // Show progress bar while loading
+    progressBar.style.width = "100%"; // Fill the progress bar
+    progressBar.style.transition = "width 1s ease"; // Smooth transition
+
+    // Make a GET request to the API to retrieve the list of breeds
+    const response = await axios.get("https://api.thecatapi.com/v1/breeds", {
+      headers: {
+        "x-api-key": API_KEY,
+      },
+    });
+
+    const breeds = response.data;
+
+    // Clear the select dropdown before populating
+    selectBox.innerHTML =
+      "<option value='' disabled selected>Select a Breed</option>";
+
+    // Iterate through the breeds and create <option> elements
+    breeds.forEach((breed) => {
+      let option = document.createElement("option");
+      option.value = breed.id; // Use the breed's id as the value
+      option.textContent = breed.name; // Use the breed's name as the displayed text
+      selectBox.appendChild(option); // Append the option to the select element
+    });
+
+    // Hide progress bar after loading
+    progressBar.style.width = "0%"; // Reset the progress bar to 0%
+  } catch (err) {
+    console.log("Error:", err); // Log any errors
+    progressBar.style.width = "0%"; // Reset the progress bar in case of an error
+  }
+};
+
+// Event handler for breed selection
 const handleBreedSelect = async (event) => {
   const breedId = event.target.value;
-  const infoDump = document.getElementById("infoDump");
-  const progressBar = document.getElementById("progressBar");
-  const getFavouritesBtn = document.getElementById("getFavouritesBtn");
-  const carouselInner = document.getElementById("carouselInner");
 
   if (!breedId) return; // if no breed is selected, exit
 
-  // show the progress bar while fetching breed info
+  // Show the progress bar while fetching breed info
   progressBar.style.width = "100%";
   progressBar.style.transition = "width 1s ease";
 
   try {
-    // fetch information for the selected breed from the Cat API
-    const breedInfoResponse = await fetch(
+    // Fetch information for the selected breed from the Cat API
+    const breedInfoResponse = await axios.get(
       `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}&limit=5`,
       {
         headers: {
@@ -92,7 +232,7 @@ const handleBreedSelect = async (event) => {
       }
     );
 
-    const breedImages = await breedInfoResponse.json();
+    const breedImages = breedInfoResponse.data;
 
     // Clear any previous carousel and information
     carouselInner.innerHTML = "";
@@ -108,20 +248,19 @@ const handleBreedSelect = async (event) => {
       const img = carouselItem.querySelector("img");
       const favButton = carouselItem.querySelector(".favourite-button");
 
-      img.src = imageData.url; // set the image URL
-      img.alt = `Cat Image ${index + 1}`; // Set the alt text for accessibility
+      img.src = imageData.url;
+      img.alt = `Cat Image ${index + 1}`;
 
-      // adding functionality to the favourite button
-      favButton.dataset.imgId = imageData.id; // Store the image ID for future reference
+      favButton.dataset.imgId = imageData.id;
       favButton.addEventListener("click", () =>
         handleFavouriteClick(imageData.id)
       );
 
       if (index === 0) {
-        carouselItem.classList.add("active"); // first item active
+        carouselItem.classList.add("active");
       }
 
-      carouselInner.appendChild(carouselItem); // add carousel item to carousel
+      carouselInner.appendChild(carouselItem);
     });
 
     // show breed information
@@ -142,32 +281,20 @@ const handleBreedSelect = async (event) => {
   }
 };
 
-// favourite button click handler
+// button click handler
 const handleFavouriteClick = (imageId) => {
   alert(`Image with ID: ${imageId} marked as favourite.`);
 };
 
-// add event listener for breed selection when DOM is ready
+// Add event listener for breed selection when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  initialLoad();
-  const breedSelect = document.getElementById("breedSelect");
-  breedSelect.addEventListener("change", handleBreedSelect);
+  initialLoad(); // Load the breeds initially
+  const breedSelect = document.getElementById("breedSelect"); // Ensure breedSelect exists
+  if (breedSelect) {
+    breedSelect.addEventListener("change", handleBreedSelect); // Add event listener only if breedSelect exists
+  }
 });
 
-/**
- * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
- *
- *
- */
-/**
- * 4. Change all of your fetch() functions to axios!
- * - axios has already been imported for you within index.js.
- * - If you've done everything correctly up to this point, this should be simple.
- * - If it is not simple, take a moment to re-evaluate your original code.
- * - Hint: Axios has the ability to set default headers. Use this to your advantage
- *   by setting a default header with your API key so that you do not have to
- *   send it manually with all of your requests! You can also set a default base URL!
- */
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
  * - Hint: you already have access to code that does this!
