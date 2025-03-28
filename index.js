@@ -289,9 +289,9 @@ const handleFavouriteClick = (imageId) => {
 // Add event listener for breed selection when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   initialLoad(); // Load the breeds initially
-  const breedSelect = document.getElementById("breedSelect"); // Ensure breedSelect exists
+  const breedSelect = document.getElementById("breedSelect"); // ensure breedSelect exists
   if (breedSelect) {
-    breedSelect.addEventListener("change", handleBreedSelect); // Add event listener only if breedSelect exists
+    breedSelect.addEventListener("change", handleBreedSelect); // add event listener only if breedSelect exists
   }
 });
 
@@ -350,11 +350,11 @@ axios.interceptors.response.use(
  */
 axios.interceptors.request.use(
   (config) => {
-    // Reset the progress bar width to 0% at the start of each request
+    // reset the progress bar width to 0% at the start of request
     progressBar.style.width = "0%";
     progressBar.style.transition = "width 0.5s ease"; // smooth transition
 
-    // Store the request start time
+    // store the request start time
     config.metadata = { startTime: new Date() }; // add field to the config object
     console.log(`Request started at: ${config.metadata.startTime}`);
     return config;
@@ -376,7 +376,7 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle errors
+    // handle errors
     if (error.config && error.config.metadata) {
       const endTime = new Date();
       const duration = endTime - error.config.metadata.startTime;
@@ -390,7 +390,7 @@ axios.interceptors.response.use(
 const updateProgress = (progressEvent) => {
   if (progressEvent.lengthComputable) {
     const percentage = (progressEvent.loaded / progressEvent.total) * 100;
-    progressBar.style.width = `${percentage}%`; 
+    progressBar.style.width = `${percentage}%`;
     console.log(`download progress: ${percentage}%`); // check progress
   }
 };
