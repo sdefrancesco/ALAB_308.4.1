@@ -302,6 +302,37 @@ document.addEventListener("DOMContentLoaded", () => {
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
 
+// axios Interceptors request
+axios.interceptors.request.use(
+  (config) => {
+    config.metadata = { startTime: new Date() };
+    console.log(`Request started at: ${config.metadata.startTime}`);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Axios Interceptors - response
+axios.interceptors.response.use(
+  (response) => {
+    const endTime = new Date();
+    const duration = endTime - response.config.metadata.startTime;
+    console.log(`Request took ${duration} ms`);
+
+    return response;
+  },
+  (error) => {
+    if (error.config && error.config.metadata) {
+      const endTime = new Date();
+      const duration = endTime - error.config.metadata.startTime;
+      console.log(`Request failed after ${duration} ms`);
+    }
+    return Promise.reject(error);
+  }
+);
+
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
  * - The progressBar element has already been created for you.
