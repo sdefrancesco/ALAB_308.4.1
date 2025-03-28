@@ -348,6 +348,52 @@ axios.interceptors.response.use(
  *   once or twice per request to this API. This is still a concept worth familiarizing yourself
  *   with for future projects.
  */
+axios.interceptors.request.use(
+  (config) => {
+    // Reset the progress bar width to 0% at the start of each request
+    progressBar.style.width = "0%";
+    progressBar.style.transition = "width 0.5s ease"; // smooth transition
+
+    // Store the request start time
+    config.metadata = { startTime: new Date() }; // add field to the config object
+    console.log(`Request started at: ${config.metadata.startTime}`);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Axios Interceptors - Response
+axios.interceptors.response.use(
+  (response) => {
+    // time taken for the request to complete
+    const endTime = new Date();
+    const duration = endTime - response.config.metadata.startTime; // difference in milliseconds
+    console.log(`Request took ${duration} ms`);
+
+    // Return the response data
+    return response;
+  },
+  (error) => {
+    // Handle errors
+    if (error.config && error.config.metadata) {
+      const endTime = new Date();
+      const duration = endTime - error.config.metadata.startTime;
+      console.log(`Request failed after ${duration} ms`);
+    }
+    return Promise.reject(error);
+  }
+);
+
+//  update the progress bar based on download progress
+const updateProgress = (progressEvent) => {
+  if (progressEvent.lengthComputable) {
+    const percentage = (progressEvent.loaded / progressEvent.total) * 100;
+    progressBar.style.width = `${percentage}%`; 
+    console.log(`download progress: ${percentage}%`); // check progress
+  }
+};
 
 /**
  * 7. As a final element of progress indication, add the following to your axios interceptors:
